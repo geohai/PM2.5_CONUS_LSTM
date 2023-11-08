@@ -484,7 +484,10 @@ def idw_weights_val(distances):
     :return:
     """
     # Set the power parameter for IDW (e.g., 2)
-    power = 3
+    power = 2
+    # Exclude self-measurements
+    distances[distances < (1000 * 10)] = 0
+
     # Calculate the IDW weights based on distances
     with np.errstate(divide='ignore', invalid='ignore'):
         weights = 1.0 / distances ** power
@@ -495,7 +498,7 @@ def idw_weights_val(distances):
     return weights
 
 
-def knn_idw_pm(daily_pm_xr, validation=False):
+def knn_idw_pm(daily_pm_xr):
     """
     :param daily_pm_xr:
     :param power:
@@ -532,23 +535,30 @@ def knn_idw_pm(daily_pm_xr, validation=False):
     print("Start KNN-IDW Training...")
 
     # Create a KNeighborsRegressor instance
-    if validation:
-        knn_regressor = KNeighborsRegressor(n_neighbors=3, weights=idw_weights_val)
-    else:
-        knn_regressor = KNeighborsRegressor(n_neighbors=3, weights=idw_weights)
+    knn_regressor_val = KNeighborsRegressor(n_neighbors=3, weights=idw_weights_val, n_jobs=1)
 
     # Fit the KNeighborsRegressor to the input points and weights
+    knn_regressor_val.fit(points, weights)
+
+    # Perform KNN interpolation
+    print("Start KNN-IDW Predicting...")
+    interpolated_weights_val = knn_regressor_val.predict(grid_points)
+    interpolated_weights_val = interpolated_weights_val.reshape(daily_pm_xr['avg_pm25'].shape)
+
+    # Create a KNeighborsRegressor instance
+    knn_regressor = KNeighborsRegressor(n_neighbors=3, weights=idw_weights, n_jobs=1)
     knn_regressor.fit(points, weights)
 
     print("Start KNN-IDW Predicting...")
-    # Perform KNN interpolation
+
     interpolated_weights = knn_regressor.predict(grid_points)
     interpolated_weights = interpolated_weights.reshape(daily_pm_xr['avg_pm25'].shape)
 
+    daily_pm_xr['knnidw_pm25_val'] = (('y', 'x'), interpolated_weights_val)
     daily_pm_xr['knnidw_pm25'] = (('y', 'x'), interpolated_weights)
     daily_pm_xr = daily_pm_xr.drop(['avg_pm25'])
 
-    return daily_pm_xr
+    return daily_pm_xr['knnidw_pm25_val'], daily_pm_xr['knnidw_pm25']
 
 
 def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
@@ -564,9 +574,10 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
     smoke_mask = load_wfsmoke(start_date=start_date, ndvi_image=ndvi_image)
     daymet_date = load_date_var(start_date=start_date, ndvi_image=ndvi_image)
     # Load EPA PM Data
-    pm_image = load_EPA_PM(pm_df=pm_df,start_date=start_date, ndvi_image=ndvi_image)
-    knnidw_pm_val = knn_idw_pm(daily_pm_xr=pm_image, validation=True)
-    knnidw_pm = knn_idw_pm(daily_pm_xr=pm_image, validation=False)
+    pm_image = load_EPA_PM(pm_df=pm_df, start_date=start_date, ndvi_image=ndvi_image)
+    knnidw_pm_val, knnidw_pm = knn_idw_pm(daily_pm_xr=pm_image)
+    knnidw_pm_val = knnidw_pm_val.rio.reproject_match(ndvi_image)
+    knnidw_pm= knnidw_pm.rio.reproject_match(ndvi_image)
 
     merge_xr = xarray.combine_by_coords([
         ndvi_image[0].to_dataset(name='ndvi'),
@@ -591,8 +602,8 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
         daymet_date['day_cos'].to_dataset(name='day_cos'),
         daymet_date['month_sin'].to_dataset(name='month_sin'),
         daymet_date['month_cos'].to_dataset(name='month_cos'),
-        knnidw_pm_val["knnidw_pm25"].to_dataset(name="knnidw_pm25_val"),
-        knnidw_pm["knnidw_pm25"].to_dataset(name="knnidw_pm25")
+        knnidw_pm_val.to_dataset(name="knnidw_pm25_val"),
+        knnidw_pm.to_dataset(name="knnidw_pm25")
     ],
         join='left', combine_attrs='drop_conflicts')
 
@@ -645,9 +656,8 @@ if __name__ == "__main__":
     print("Loading EPA's PM2.5 Measurements!")
     pm_list = glob("../data/PM25/*.csv")
 
-    pm_df = pd.concat(
-        map(pd.read_csv, pm_list), ignore_index=True
-    )
+    pm_df = [pd.read_csv(file, low_memory=False) for file in pm_list]
+    pm_df = pd.concat(pm_df, ignore_index=True)
 
     while start_date < end_date:
 
