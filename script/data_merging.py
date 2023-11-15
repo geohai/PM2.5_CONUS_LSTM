@@ -554,11 +554,16 @@ def knn_idw_pm(daily_pm_xr):
     interpolated_weights = knn_regressor.predict(grid_points)
     interpolated_weights = interpolated_weights.reshape(daily_pm_xr['avg_pm25'].shape)
 
+    print("Calculating Distance...")
+    nearest_distance = np.min(knn_regressor_val.kneighbors(grid_points, 3)[0], axis=1)
+    nearest_distance = nearest_distance.reshape(daily_pm_xr['avg_pm25'].shape)
+
     daily_pm_xr['knnidw_pm25_val'] = (('y', 'x'), interpolated_weights_val)
     daily_pm_xr['knnidw_pm25'] = (('y', 'x'), interpolated_weights)
+    daily_pm_xr['knnidw_distance'] = (('y', 'x'), nearest_distance)
     daily_pm_xr = daily_pm_xr.drop(['avg_pm25'])
 
-    return daily_pm_xr['knnidw_pm25_val'], daily_pm_xr['knnidw_pm25']
+    return daily_pm_xr['knnidw_pm25_val'], daily_pm_xr['knnidw_pm25'], daily_pm_xr['knnidw_distance']
 
 
 def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
@@ -576,9 +581,10 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
     # Load EPA PM Data
     pm_image = load_EPA_PM(pm_df=pm_df, start_date=start_date, ndvi_image=ndvi_image)
     pm_image = pm_image.rio.reproject_match(ndvi_image)
-    knnidw_pm_val, knnidw_pm = knn_idw_pm(daily_pm_xr=pm_image)
+    knnidw_pm_val, knnidw_pm, knnidw_distance = knn_idw_pm(daily_pm_xr=pm_image)
     knnidw_pm_val = knnidw_pm_val.rio.reproject_match(ndvi_image)
     knnidw_pm= knnidw_pm.rio.reproject_match(ndvi_image)
+    knnidw_distance = knnidw_distance.rio.reproject_match(ndvi_image)
 
     merge_xr = xarray.combine_by_coords([
         ndvi_image[0].to_dataset(name='ndvi'),
@@ -605,6 +611,7 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
         daymet_date['month_cos'].to_dataset(name='month_cos'),
         knnidw_pm_val.to_dataset(name="knnidw_pm25_val"),
         knnidw_pm.to_dataset(name="knnidw_pm25"),
+        knnidw_distance.to_dataset(name="knnidw_distance"),
         pm_image['avg_pm25'].to_dataset(name="avg_pm25")
     ],
         join='left', combine_attrs='drop_conflicts')
@@ -638,6 +645,7 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
                                  'year': {'dtype': 'float32'},
                                  'knnidw_pm25_val': {'dtype': 'float32'},
                                  'knnidw_pm25': {'dtype': 'float32'},
+                                 'knnidw_distance':{'dtype': 'float32'},
                                  'avg_pm25': {'dtype': 'float32'},
                                  }
                        )
