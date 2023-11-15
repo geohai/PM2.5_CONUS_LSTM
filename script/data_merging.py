@@ -467,7 +467,7 @@ def idw_weights(distances):
     :return:
     """
     # Set the power parameter for IDW (e.g., 2)
-    power = 3
+    power = 2
     # Calculate the IDW weights based on distances
     with np.errstate(divide='ignore', invalid='ignore'):
         weights = 1.0 / distances ** power
@@ -486,7 +486,7 @@ def idw_weights_val(distances):
     # Set the power parameter for IDW (e.g., 2)
     power = 2
     # Exclude self-measurements
-    distances[distances < (1000 * 10)] = 0
+    distances[distances < (1000 * 20)] = 0
 
     # Calculate the IDW weights based on distances
     with np.errstate(divide='ignore', invalid='ignore'):
@@ -575,6 +575,7 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
     daymet_date = load_date_var(start_date=start_date, ndvi_image=ndvi_image)
     # Load EPA PM Data
     pm_image = load_EPA_PM(pm_df=pm_df, start_date=start_date, ndvi_image=ndvi_image)
+    pm_image = pm_image.rio.reproject_match(ndvi_image)
     knnidw_pm_val, knnidw_pm = knn_idw_pm(daily_pm_xr=pm_image)
     knnidw_pm_val = knnidw_pm_val.rio.reproject_match(ndvi_image)
     knnidw_pm= knnidw_pm.rio.reproject_match(ndvi_image)
@@ -603,7 +604,8 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
         daymet_date['month_sin'].to_dataset(name='month_sin'),
         daymet_date['month_cos'].to_dataset(name='month_cos'),
         knnidw_pm_val.to_dataset(name="knnidw_pm25_val"),
-        knnidw_pm.to_dataset(name="knnidw_pm25")
+        knnidw_pm.to_dataset(name="knnidw_pm25"),
+        pm_image['avg_pm25'].to_dataset(name="avg_pm25")
     ],
         join='left', combine_attrs='drop_conflicts')
 
@@ -636,6 +638,7 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
                                  'year': {'dtype': 'float32'},
                                  'knnidw_pm25_val': {'dtype': 'float32'},
                                  'knnidw_pm25': {'dtype': 'float32'},
+                                 'avg_pm25': {'dtype': 'float32'},
                                  }
                        )
 
@@ -646,7 +649,7 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
 
 if __name__ == "__main__":
     start_date = datetime(2005, 8, 5).date()
-    end_date = datetime(2008, 1, 1).date()
+    end_date = datetime(2011, 1, 1).date()
     delta = timedelta(days=1)
 
     ndvi_image = load_aod_5km(start_date=start_date)
