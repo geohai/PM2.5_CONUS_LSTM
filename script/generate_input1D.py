@@ -14,7 +14,7 @@ def generate_input1D(start_date, end_date):
 
     i = 0
 
-    while start_date < end_date:
+    while start_date <= end_date:
 
         print(f"Current Date: {start_date}")
         start_time = time.time()
@@ -40,11 +40,11 @@ def generate_input1D(start_date, end_date):
     print("All points extracted!")
 
     input_df = pd.DataFrame(all_arr, columns=list(merged_xr.keys()) + ['date'])
-    input_df.to_csv(f'../data/input_1D/{start_date.year}_points_wdates.csv', index=False)
+    input_df.to_csv(f'../data/input_1D/{start_date.year-1}_points_wdates.csv', index=False)
 
 
 if __name__ == "__main__":
-    start_date = datetime(2005, 8, 5).date()
-    end_date = datetime(2006, 1, 1).date()
+    start_date = datetime(2010, 1, 1).date()
+    end_date = datetime(2010, 12, 31).date()
 
     generate_input1D(start_date=start_date, end_date=end_date)
