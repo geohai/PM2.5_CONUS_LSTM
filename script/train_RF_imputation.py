@@ -104,7 +104,7 @@ def train_RF(train_df, buffer_avg=True, target="047", validation=False):
         print("MBE on testing set is for the Random Forest model is: {}".format(mbe_test_rf))
 
     print(f"Exporting RF_{target}_{'with' if buffer_avg else 'w/o'} model...")
-    joblib.dump(best_rf_regressor, f"../model/RF_imputation/RF_AOD{target}_f"
+    joblib.dump(best_rf_regressor, f"../model/RF_imputation/RF_AOD{target}_"
                                    f"{'with' if buffer_avg else 'without'}_buffer.joblib")
 
     print("================================================================================")
