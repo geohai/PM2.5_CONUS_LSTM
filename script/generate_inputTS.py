@@ -18,6 +18,8 @@ def generate_input1D(estimate_date, time_lag=21):
     idx_arr = np.argwhere(~np.isnan(ref_xr['avg_pm25'].values))
     print(f"Num of Points: {idx_arr.shape[0]}")
 
+    # This is the easiest solution, but takes longer.
+    '''
     for i in range(len(date_list)):
         current_xr = xarray.open_dataset(f"../data/merged_inputs/{date_list[i]}_with_imputation.nc").squeeze()
         current_xr = current_xr.drop(["aod_buffer_047", "aod_buffer_055", "knnidw_pm25", "avg_pm25"])
@@ -40,6 +42,43 @@ def generate_input1D(estimate_date, time_lag=21):
     # Check Shape
     print(n_input.shape)
     print(n_truth.shape)
+    '''
+    for i in range(len(date_list)):
+        current_xr = xarray.open_dataset(f"../data/merged_inputs/{date_list[i]}_with_imputation.nc").squeeze()
+        current_xr = current_xr.drop(["aod_buffer_047", "aod_buffer_055", "knnidw_pm25", "avg_pm25"])
+        print(f"Current date: {i + 1} / {time_lag}")
+
+        for j in range(idx_arr.shape[0]):
+            y = idx_arr[j, 0]
+            x = idx_arr[i, 1]
+
+            one_input = current_xr.isel(y=y, x=x).to_array().values
+            if j == 0:
+                n_daily = [one_input]
+            else:
+                n_daily.append(one_input)
+
+            # Extract Ground Truth for Last Date
+            if i == time_lag-1:
+                one_truth = ref_xr['avg_pm25'].isel(y=y, x=x).values
+                if j == 0:
+                    n_truth = [one_truth]
+                else:
+                    n_truth.append(one_truth)
+
+        n_daily = np.stack(n_daily, axis=0)
+        if i == 0:
+            n_input = [n_daily]
+        else:
+            n_input.append(n_daily)
+
+
+    n_input = np.stack(n_input, axis=1)
+    n_truth = np.stack(n_truth, axis=0)
+    n_truth = n_truth.reshape(-1, 1)
+
+    # print(n_input.shape)
+    # print(n_truth.shape)
 
     if os.path.exists(f'../data/input_TS'):
         np.save(f'../data/input_TS/TS_X_{estimate_date}.npy', n_input)
@@ -53,7 +92,8 @@ def generate_input1D(estimate_date, time_lag=21):
 
 
 if __name__ == "__main__":
-    start_date = datetime(2005, 8, 25).date()
+    # start_date = datetime(2005, 8, 25).date()
+    start_date = datetime(2005, 9, 28).date()
     end_date = datetime(2010, 12, 31).date()
     delta = timedelta(days=1)
 
