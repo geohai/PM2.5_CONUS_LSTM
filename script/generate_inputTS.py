@@ -94,7 +94,7 @@ def generate_input1D(estimate_date, time_lag=21):
 if __name__ == "__main__":
     # start_date = datetime(2005, 8, 25).date()
     start_date = datetime(2005, 9, 28).date()
-    end_date = datetime(2010, 12, 31).date()
+    end_date = datetime(2011, 1, 1).date()
     delta = timedelta(days=1)
 
     while start_date < end_date:
@@ -102,7 +102,10 @@ if __name__ == "__main__":
         print(f"Current Date: {start_date}")
         start_time = time.time()
 
-        generate_input1D(estimate_date=start_date, time_lag=21)
+        if os.path.isfile(f'../data/input_TS/TS_X_{start_date}.npy'):
+            print("File already existed!")
+        else:
+            generate_input1D(estimate_date=start_date, time_lag=21)
 
         start_date = start_date + delta
 
