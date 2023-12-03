@@ -1,10 +1,21 @@
 # Daily 1-KM resolution PM2.5 for Contiguous US from 2015 to 2021
 
-Simple overview of use/purpose.
+The Repo holds the script and models for generating 
+**Daily 1-KM resolution PM2.5** for 
+contiguous US from 2015-08-26 to 2021-12-31
 
 ## Description
 
-An in-depth paragraph about your project and overview of use.
+* Data
+
+| Data Source                | Variable                                                                                    | Description                                                                                                                                                                             | Temporal Resolution | Spatial Resolution  |
+|----------------------------|---------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|---------------------|
+| MODIS MCD19A2.061          | AOD 047 and AOD 055                                                                         | MODIS Terra and Aqua combined Multi-angle Implementation of Atmospheric Correction (MAIAC)  Land Aerosol Optical Depth (AOD) gridded Level 2 product produced daily at 1 km resolution. | Daily               | 1-km                |
+| MODIS MCD43A4_006_NDVI     | NDVI                                                                                        | NDVI generated from the MODIS/006/MCD43A4 surface reflectance composites.                                                                                                               | 16-Day              | 0.5-km              |
+| Daymet                     | Day Length, Pricipitation, Shortwave Radiation,  Max and Min Temperature, and Vapor Pressue | Daily Surface Weather and Climatological Summaries                                                                                                                                      | Daily               | 1-km                |
+| gridMet                    | Wind direction and velocity                                                                 | A dataset of daily high-spatial resolution (~4-km, 1/24th degree) surface meteorological data covering  the contiguous US from 1979-yesterday.                                          | Daily               | 1/24th degree ~4-km |
+| GMTED                      | DEM                                                                                         | The Global Multi-resolution Terrain Elevation Data 2010 (GMTED2010).                                                                                                                    | Static (2010)       | 1-km                |
+| NOAA Hazard Mapping System | Wildfire Smoke Density                                                                      | NOAA's Hazard Mapping System (HMS) Smoke Product                                                                                                                                        | Daily               | 1-km                |
 
 ## Getting Started
 
