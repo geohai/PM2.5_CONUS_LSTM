@@ -656,8 +656,8 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
 
 
 if __name__ == "__main__":
-    start_date = datetime(2005, 8, 5).date()
-    end_date = datetime(2011, 1, 1).date()
+    start_date = datetime(2011, 1, 1).date()
+    end_date = datetime(2015, 1, 1).date()
     delta = timedelta(days=1)
 
     ndvi_image = load_aod_5km(start_date=start_date)

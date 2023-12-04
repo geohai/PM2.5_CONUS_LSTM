@@ -4,7 +4,6 @@ from datetime import datetime
 import numpy as np
 
 from sklearn.model_selection import KFold
-from sklearn.metrics import mean_squared_error, mean_absolute_error
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 
@@ -12,7 +11,6 @@ import joblib
 
 import tensorflow as tf
 from keras.models import Model
-import keras.layers
 from keras.layers import Dense, Input, LSTM, Concatenate, TimeDistributed, Conv1D, \
     MaxPooling1D, Flatten, Bidirectional, RepeatVector, Reshape, \
     Dropout, BatchNormalization, LayerNormalization
@@ -81,7 +79,7 @@ def fit_lstm_model(train_X, train_y, n_batch, n_epoch, n_neurons, val=0.05):
     print(f'Model Output shape: {y.shape}')
 
     # patient early stopping
-    es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10)
+    es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
 
     # Set up Tensorboard
     logdir = os.path.join("logs", datetime.now().strftime("%Y%m%d-%H%M%S"))
@@ -129,12 +127,24 @@ if __name__ == "__main__":
     print(f"Num. of Days of Training Set: {len(X_path)}")
 
     X = np.concatenate([np.load(X_path) for X_path in X_path])
+    # Adjust for inputs
+    # dist_mask = np.array(X[:, :, 15] <= 500 * 1000, dtype=int)
+    # dist_mask[dist_mask == 0] = -1
+    # X[:, :, 15] = dist_mask
+    # X[:, :, 16] = X[:, :, 16] * dist_mask
+    # X[X[:, :, 16] == 0] = -1
+    mask = list(range(0, 22))
+    mask.remove(15)
+    X = X[:, :, mask]
     y = np.concatenate([np.load(y_path) for y_path in y_path])
+
+    # Assign small value for 0.0
+    y[y == 0] = 0.1
 
     time_lag = X.shape[1]
     n_features = X.shape[2]
 
-    print(f"Total Training Samples: {X.shape[0]}")
+    print(f"Total Training Samples: {X.shape}, {y.shape}")
 
     # Normalize Inputs
     X, y, X_scaler, y_scaler = normalize_data(X, y)
@@ -174,7 +184,7 @@ if __name__ == "__main__":
 
         model = fit_lstm_model(train_X=train_X, train_y=train_y,
                                n_batch=2 ** 7, n_epoch=100,
-                               n_neurons=2 ** 9, val=0.05)
+                               n_neurons=2 ** 9, val=0.02)
 
         print("Model Training Completed!")
         # Calling `save('my_model.h5')` creates a h5 file `my_model.h5`.
@@ -203,4 +213,4 @@ if __name__ == "__main__":
 
         evaluate_forecasts(truth=inv_y_val, pred=inv_pred_val)
 
-    print("Training Finished!")
+        print("Training Finished!")
