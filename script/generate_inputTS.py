@@ -50,7 +50,7 @@ def generate_input1D(estimate_date, time_lag=21):
 
         for j in range(idx_arr.shape[0]):
             y = idx_arr[j, 0]
-            x = idx_arr[i, 1]
+            x = idx_arr[j, 1]
 
             one_input = current_xr.isel(y=y, x=x).to_array().values
             if j == 0:
