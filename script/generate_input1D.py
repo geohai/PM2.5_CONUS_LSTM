@@ -44,7 +44,7 @@ def generate_input1D(start_date, end_date):
 
 
 if __name__ == "__main__":
-    start_date = datetime(2010, 1, 1).date()
-    end_date = datetime(2010, 12, 31).date()
+    start_date = datetime(2012, 1, 1).date()
+    end_date = datetime(2012, 12, 31).date()
 
     generate_input1D(start_date=start_date, end_date=end_date)

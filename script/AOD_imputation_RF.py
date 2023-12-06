@@ -118,8 +118,8 @@ def aod_imputation_RF(date,
 
 
 if __name__ == "__main__":
-    start_date = datetime(2005, 8,5).date()
-    end_date = datetime(2011, 1, 1).date()
+    start_date = datetime(2010, 12,1).date()
+    end_date = datetime(2013, 1, 1).date()
     delta = timedelta(days=1)
 
     print('Loading four models')
