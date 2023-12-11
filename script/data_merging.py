@@ -64,6 +64,9 @@ def load_ndvi(start_date, aod_buffer):
     print('Loading NDVI!')
     ndvi_list = glob('../data/ndvi_processed/*.tif')
 
+    # If WinOS, glob will return path with "\\"
+    ndvi_list = list(map(lambda x: x.replace('\\', '/'), ndvi_list))
+
     ndvi_date_list = [datetime.strptime(date_str.split('/')[-1][:-4],
                                         '%Y-%m-%d').date() for date_str in ndvi_list]
 
@@ -656,8 +659,8 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
 
 
 if __name__ == "__main__":
-    start_date = datetime(2010, 12, 1).date()
-    end_date = datetime(2015, 1, 1).date()
+    start_date = datetime(2019, 1, 1).date()
+    end_date = datetime(2022, 1, 1).date()
     delta = timedelta(days=1)
 
     ndvi_image = load_aod_5km(start_date=start_date)
