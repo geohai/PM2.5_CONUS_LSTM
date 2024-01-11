@@ -489,7 +489,7 @@ def idw_weights_val(distances):
     # Set the power parameter for IDW (e.g., 2)
     power = 2
     # Exclude self-measurements
-    distances[distances < (1000 * 20)] = 0
+    distances[distances < (1000 * 5)] = 0
 
     # Calculate the IDW weights based on distances
     with np.errstate(divide='ignore', invalid='ignore'):
@@ -538,7 +538,7 @@ def knn_idw_pm(daily_pm_xr):
     print("Start KNN-IDW Training...")
 
     # Create a KNeighborsRegressor instance
-    knn_regressor_val = KNeighborsRegressor(n_neighbors=3, weights=idw_weights_val, n_jobs=1)
+    knn_regressor_val = KNeighborsRegressor(n_neighbors=4, weights=idw_weights_val, n_jobs=1)
 
     # Fit the KNeighborsRegressor to the input points and weights
     knn_regressor_val.fit(points, weights)
@@ -546,16 +546,16 @@ def knn_idw_pm(daily_pm_xr):
     # Perform KNN interpolation
     print("Start KNN-IDW Predicting...")
     interpolated_weights_val = knn_regressor_val.predict(grid_points)
-    interpolated_weights_val = interpolated_weights_val.reshape(daily_pm_xr['avg_pm25'].shape)
+    interpolated_weights_val = interpolated_weights_val.reshape(np.flip(daily_pm_xr['avg_pm25'].shape)).T
 
     # Create a KNeighborsRegressor instance
-    knn_regressor = KNeighborsRegressor(n_neighbors=3, weights=idw_weights, n_jobs=1)
+    knn_regressor = KNeighborsRegressor(n_neighbors=4, weights=idw_weights, n_jobs=1)
     knn_regressor.fit(points, weights)
 
     print("Start KNN-IDW Predicting...")
 
     interpolated_weights = knn_regressor.predict(grid_points)
-    interpolated_weights = interpolated_weights.reshape(daily_pm_xr['avg_pm25'].shape)
+    interpolated_weights = interpolated_weights.reshape(np.flip(daily_pm_xr['avg_pm25'].shape)).T
 
     print("Calculating Distance...")
     nearest_distance = np.min(knn_regressor_val.kneighbors(grid_points, 3)[0], axis=1)
@@ -586,7 +586,7 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
     pm_image = pm_image.rio.reproject_match(ndvi_image)
     knnidw_pm_val, knnidw_pm, knnidw_distance = knn_idw_pm(daily_pm_xr=pm_image)
     knnidw_pm_val = knnidw_pm_val.rio.reproject_match(ndvi_image)
-    knnidw_pm= knnidw_pm.rio.reproject_match(ndvi_image)
+    knnidw_pm = knnidw_pm.rio.reproject_match(ndvi_image)
     knnidw_distance = knnidw_distance.rio.reproject_match(ndvi_image)
 
     merge_xr = xarray.combine_by_coords([
@@ -648,7 +648,7 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
                                  'year': {'dtype': 'float32'},
                                  'knnidw_pm25_val': {'dtype': 'float32'},
                                  'knnidw_pm25': {'dtype': 'float32'},
-                                 'knnidw_distance':{'dtype': 'float32'},
+                                 'knnidw_distance': {'dtype': 'float32'},
                                  'avg_pm25': {'dtype': 'float32'},
                                  }
                        )
@@ -659,8 +659,9 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
 
 
 if __name__ == "__main__":
-    start_date = datetime(2019, 1, 1).date()
-    end_date = datetime(2022, 1, 1).date()
+    # start_date = datetime(2005, 8, 5).date()
+    start_date = datetime(2005, 8, 5).date()
+    end_date = datetime(2006, 1, 1).date()
     delta = timedelta(days=1)
 
     ndvi_image = load_aod_5km(start_date=start_date)
@@ -672,6 +673,9 @@ if __name__ == "__main__":
 
     pm_df = [pd.read_csv(file, low_memory=False) for file in pm_list]
     pm_df = pd.concat(pm_df, ignore_index=True)
+
+    # Filter out negative measurements
+    pm_df = pm_df[pm_df['arithmetic_mean'] >= 0]
 
     while start_date < end_date:
 

@@ -4,12 +4,10 @@ from glob import glob
 import os
 import joblib
 
-
 import xarray
-
+import xgboost
 
 import numpy as np
-
 
 import warnings
 
@@ -118,11 +116,13 @@ def aod_imputation_RF(date,
 
 
 if __name__ == "__main__":
-    start_date = datetime(2010, 12,1).date()
-    end_date = datetime(2013, 1, 1).date()
+    start_date = datetime(2019, 1,1).date()
+    end_date = datetime(2022, 1, 1).date()
     delta = timedelta(days=1)
 
     print('Loading four models')
+    '''
+    ######### This is for RF ##########
     rf_aod_047_wbuffer = joblib.load('../model/RF_imputation/RF_AOD047_with_buffer.joblib')
 
     rf_aod_055_wbuffer = joblib.load('../model/RF_imputation/RF_AOD055_with_buffer.joblib')
@@ -131,6 +131,15 @@ if __name__ == "__main__":
     rf_aod_047_wobuffer = joblib.load('../model/RF_imputation/RF_AOD047_without_buffer.joblib')
 
     rf_aod_055_wobuffer = joblib.load('../model/RF_imputation/RF_AOD055_without_buffer.joblib')
+    '''
+    rf_aod_047_wbuffer = joblib.load('../model/XGB_Imputation/XGB_AOD047_with_buffer.joblib')
+
+    rf_aod_055_wbuffer = joblib.load('../model/XGB_Imputation/XGB_AOD055_with_buffer.joblib')
+
+    # Imputation without Buffer
+    rf_aod_047_wobuffer = joblib.load('../model/XGB_Imputation/XGB_AOD047_without_buffer.joblib')
+
+    rf_aod_055_wobuffer = joblib.load('../model/XGB_Imputation/XGB_AOD055_without_buffer.joblib')
 
     while start_date < end_date:
 

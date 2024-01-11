@@ -93,8 +93,8 @@ def generate_input1D(estimate_date, time_lag=21):
 
 if __name__ == "__main__":
     # start_date = datetime(2005, 8, 25).date()
-    start_date = datetime(2005, 9, 28).date()
-    end_date = datetime(2013, 1, 1).date()
+    start_date = datetime(2019, 1, 1).date()
+    end_date = datetime(2022, 1, 1).date()
     delta = timedelta(days=1)
 
     while start_date < end_date:

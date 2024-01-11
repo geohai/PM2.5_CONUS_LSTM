@@ -120,10 +120,10 @@ if __name__ == "__main__":
 
     # Start Training Model with Buffer Average
     print("Start Training Model with Buffer Average...")
-    train_RF(train_df=pm_df, buffer_avg=True, target="047", validation=True)
-    train_RF(train_df=pm_df, buffer_avg=True, target="055", validation=True)
+    train_RF(train_df=pm_df, buffer_avg=True, target="047", validation=False)
+    train_RF(train_df=pm_df, buffer_avg=True, target="055", validation=False)
 
     # Start Training Model with Buffer Average
     print("Start Training Model w/o Buffer Average...")
-    train_RF(train_df=pm_df, buffer_avg=False, target="047", validation=True)
-    train_RF(train_df=pm_df, buffer_avg=False, target="055", validation=True)
+    train_RF(train_df=pm_df, buffer_avg=False, target="047", validation=False)
+    train_RF(train_df=pm_df, buffer_avg=False, target="055", validation=False)
