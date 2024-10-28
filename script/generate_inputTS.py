@@ -45,7 +45,7 @@ def generate_input1D(estimate_date, time_lag=21):
     '''
     for i in range(len(date_list)):
         current_xr = xarray.open_dataset(f"../data/merged_inputs/{date_list[i]}_with_imputation.nc").squeeze()
-        current_xr = current_xr.drop(["aod_buffer_047", "aod_buffer_055", "knnidw_pm25", "avg_pm25"])
+        current_xr = current_xr.drop(["aod_buffer_047", "aod_buffer_055", "avg_pm25"])
         print(f"Current date: {i + 1} / {time_lag}")
 
         for j in range(idx_arr.shape[0]):
@@ -93,7 +93,7 @@ def generate_input1D(estimate_date, time_lag=21):
 
 if __name__ == "__main__":
     # start_date = datetime(2005, 8, 25).date()
-    start_date = datetime(2019, 1, 1).date()
+    start_date = datetime(2005, 8, 25).date()
     end_date = datetime(2022, 1, 1).date()
     delta = timedelta(days=1)
 

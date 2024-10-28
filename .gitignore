@@ -1,1 +1,12 @@
 /data/
+/script/point_predict_LSTM.py
+/script/AOD_imputation_alt.py
+/script/predictUS_LSTM.py
+/script/logs
+/Results_Viz
+/output
+/eval
+/model/LSTM_model/CV_models
+/model/LSTM_model/filtered_data
+/model/LSTM_model/knn_dist
+/model/LSTM_model/attention_model.h5

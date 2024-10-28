@@ -72,11 +72,11 @@ def aod_imputation_RF(date,
                             & (~np.isnan(unimputed_3darray[13])) & (np.isnan(aod_3darray[1]))
 
     # Get idx of coordinates without buffer
-    model_047_wobuffer_idx = (np.isnan(unimputed_3darray[0])) & (np.isnan(unimputed_3darray[1])) \
+    model_047_wobuffer_idx = (np.isnan(unimputed_3darray[0])) | (np.isnan(unimputed_3darray[1])) \
                              & (~np.isnan(unimputed_3darray[4])) \
                              & (~np.isnan(unimputed_3darray[13])) & (np.isnan(aod_3darray[0]))
 
-    model_055_wobuffer_idx = (np.isnan(unimputed_3darray[0])) & (np.isnan(unimputed_3darray[1])) \
+    model_055_wobuffer_idx = (np.isnan(unimputed_3darray[0])) | (np.isnan(unimputed_3darray[1])) \
                              & (~np.isnan(unimputed_3darray[4])) \
                              & (~np.isnan(unimputed_3darray[13])) & (np.isnan(aod_3darray[1]))
 
@@ -116,8 +116,9 @@ def aod_imputation_RF(date,
 
 
 if __name__ == "__main__":
-    start_date = datetime(2019, 1,1).date()
-    end_date = datetime(2022, 1, 1).date()
+    # start_date = datetime(2005, 8,5).date()
+    start_date = datetime(2007, 12,10).date()
+    end_date = datetime(2010, 1, 1).date()
     delta = timedelta(days=1)
 
     print('Loading four models')

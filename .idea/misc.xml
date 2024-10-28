@@ -4,4 +4,7 @@
     <option name="sdkName" value="PM25_new" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="PM25" project-jdk-type="Python SDK" />
+  <component name="PyCharmProfessionalAdvertiser">
+    <option name="shown" value="true" />
+  </component>
 </project>

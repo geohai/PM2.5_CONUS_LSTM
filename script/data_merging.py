@@ -470,12 +470,12 @@ def idw_weights(distances):
     :return:
     """
     # Set the power parameter for IDW (e.g., 2)
-    power = 2
+    power = 1
     # Calculate the IDW weights based on distances
     with np.errstate(divide='ignore', invalid='ignore'):
         weights = 1.0 / distances ** power
 
-    weights[weights == np.inf] = 9999
+    weights[weights == np.inf] = 999
 
     return weights
 
@@ -487,9 +487,9 @@ def idw_weights_val(distances):
     :return:
     """
     # Set the power parameter for IDW (e.g., 2)
-    power = 2
+    power = 1
     # Exclude self-measurements
-    distances[distances < (1000 * 5)] = 0
+    distances[distances <= (1000 * 30)] = 0
 
     # Calculate the IDW weights based on distances
     with np.errstate(divide='ignore', invalid='ignore'):
@@ -508,6 +508,9 @@ def knn_idw_pm(daily_pm_xr):
     :param validation:
     :return:
     """
+    base_crs = daily_pm_xr.rio.crs
+    daily_pm_xr = daily_pm_xr.rio.reproject("EPSG:3857")
+
     grid_within_regions = daily_pm_xr.to_dataframe().reset_index()
     grid_within_regions = gpd.GeoDataFrame(
         grid_within_regions["avg_pm25"],
@@ -538,7 +541,7 @@ def knn_idw_pm(daily_pm_xr):
     print("Start KNN-IDW Training...")
 
     # Create a KNeighborsRegressor instance
-    knn_regressor_val = KNeighborsRegressor(n_neighbors=4, weights=idw_weights_val, n_jobs=1)
+    knn_regressor_val = KNeighborsRegressor(n_neighbors=9, weights=idw_weights_val, n_jobs=1)
 
     # Fit the KNeighborsRegressor to the input points and weights
     knn_regressor_val.fit(points, weights)
@@ -549,7 +552,7 @@ def knn_idw_pm(daily_pm_xr):
     interpolated_weights_val = interpolated_weights_val.reshape(np.flip(daily_pm_xr['avg_pm25'].shape)).T
 
     # Create a KNeighborsRegressor instance
-    knn_regressor = KNeighborsRegressor(n_neighbors=4, weights=idw_weights, n_jobs=1)
+    knn_regressor = KNeighborsRegressor(n_neighbors=9, weights=idw_weights, n_jobs=1)
     knn_regressor.fit(points, weights)
 
     print("Start KNN-IDW Predicting...")
@@ -660,8 +663,8 @@ def merge_datasets(start_date, dem_image, daymet_lat_lon, pm_df):
 
 if __name__ == "__main__":
     # start_date = datetime(2005, 8, 5).date()
-    start_date = datetime(2005, 8, 5).date()
-    end_date = datetime(2006, 1, 1).date()
+    start_date = datetime(2007, 12, 10).date()
+    end_date = datetime(2010, 1, 1).date()
     delta = timedelta(days=1)
 
     ndvi_image = load_aod_5km(start_date=start_date)

@@ -75,9 +75,9 @@ def train_RF(train_df, buffer_avg=True, target="047", validation=False):
 
     train_df = train_df[feature_list]
     # Filter out records have grount truth
-    train_df = train_df[train_df['aod_047'].notnull()]
+    train_df = train_df[train_df[f'aod_{target}'].notnull()]
     if buffer_avg:
-        train_df = train_df[train_df['aod_buffer_047'].notnull()]
+        train_df = train_df[train_df[f'aod_buffer_{target}'].notnull()]
         print(f"Total Samples | Buffer: {buffer_avg}: {train_df.shape}")
 
     # Fill NaNs or RF cannot work
