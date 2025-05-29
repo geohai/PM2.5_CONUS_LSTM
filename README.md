@@ -58,6 +58,17 @@ python notebooks/plot_example.py outputs/pm25_2020-07-05.nc
 * **GPU (optional)**  
   *Inference works on CPU; training the full 17-year model requires an NVIDIA card with ≥ 10 GB VRAM and CUDA 11.4.*
 
+## Create the Conda environment
+```bash
+# with Conda
+conda env create -f environment.yml
+
+# …or with Mamba (recommended: ~5× faster)
+mamba env create -f environment.yml
+
+conda activate pm25-1km        # activate the new env
+```
+
 ---
 
 ## Data Sources
