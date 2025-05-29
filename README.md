@@ -1,12 +1,59 @@
-# Daily 1-KM resolution PM2.5 for Contiguous US from 2015 to 2021
+# Daily 1-KM resolution PM2.5 for Contiguous US from 2005 to 2021
 
-The Repo holds the script and models for generating 
-**Daily 1-KM resolution PM2.5** for 
-contiguous US from 2015-08-26 to 2021-12-31
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1234567.svg)](https://doi.org/10.5281/zenodo.1234567)
+![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
+![Python](https://img.shields.io/badge/python-3.10+-blue)
 
-## Description
+> **High-resolution daily PM₂․₅ maps (1 km) for the contiguous United States (2005-08-25 ➜ 2021-12-31),  
+> generated with a Bi-LSTM-Attention model described in _Wang et al., Remote Sensing 17(1):126, 2025_.**
 
-* Data
+<p align="center">
+  <img src="docs/_static/example_conus_2020-07-05.png" alt="Example map" width="85%">
+</p>
+
+---
+
+## Table of Contents
+1. [Dataset overview](#dataset-overview)  
+2. [Quick start](#quick-start)  (under construction) 
+3. [Install & environment](#install--environment)   
+4. [Data sources](#data-sources)  
+5. [Citation](#citation)  
+6. [License](#license)  
+
+---
+
+## Dataset overview
+* **Spatial coverage:** CONUS (lower 48 + DC)  
+* **Spatial resolution:** 0.01° (~1 km) MODIS sinusoidal grid  
+* **Temporal coverage:** 2005-08-25 → 2021-12-31 (2 392 days)  
+
+---
+## Quick start&nbsp;<img src="https://img.shields.io/badge/status-under%20construction-orange" alt="under construction" height="20">
+```bash
+# 1. Clone & install
+git clone https://github.com/air-lab/pm25-1km.git
+cd pm25-1km
+mamba env create -f environment.yml
+conda activate pm25-1km
+
+# 2. Download a 3-day sample (~25 MB)
+python scripts/download_sample.py --dest data/sample
+
+# 3. Run inference for 2020-07-05
+python scripts/infer.py --date 2020-07-05 --input data/sample \
+                        --checkpoint checkpoints/bi_lstm_attention.pth \
+                        --output outputs/pm25_2020-07-05.nc
+
+# 4. Visualise
+python notebooks/plot_example.py outputs/pm25_2020-07-05.nc
+```
+
+## Install & environment &nbsp;<img src="https://img.shields.io/badge/status-under%20construction-orange" alt="under construction" height="20">
+
+---
+
+## Data Sources
 
 | Data Source                | Variable                                                                                    | Description                                                                                                                                                                             | Temporal Resolution | Spatial Resolution  |
 |----------------------------|---------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|---------------------|
@@ -16,50 +63,26 @@ contiguous US from 2015-08-26 to 2021-12-31
 | gridMet                    | Wind direction and velocity                                                                 | A dataset of daily high-spatial resolution (~4-km, 1/24th degree) surface meteorological data covering  the contiguous US from 1979-yesterday.                                          | Daily               | 1/24th degree ~4-km |
 | GMTED                      | DEM                                                                                         | The Global Multi-resolution Terrain Elevation Data 2010 (GMTED2010).                                                                                                                    | Static (2010)       | 1-km                |
 | NOAA Hazard Mapping System | Wildfire Smoke Density                                                                      | NOAA's Hazard Mapping System (HMS) Smoke Product                                                                                                                                        | Daily               | 1-km                |
+---
+## Citation
 
-## Getting Started
+If you use this repository or the derived 1-km PM₂․₅ dataset in your work, please cite:
 
-### Dependencies
-
-* Describe any prerequisites, libraries, OS version, etc., needed before installing program.
-* ex. Windows 10
-
-### Installing
-
-* How/where to download your program
-* Any modifications needed to be made to files/folders
-
-### Executing program
-
-* How to run the program
-* Step-by-step bullets
+```bibtex
+@article{wang2025high,
+  title   = {High-Resolution Estimation of Daily PM2.5 Levels in the Contiguous US Using Bi-LSTM with Attention},
+  author  = {Wang, Zhongying and Crooks, James L. and Regan, Elizabeth Anne and Karimzadeh, Morteza},
+  journal = {Remote Sensing},
+  volume  = {17},
+  number  = {1},
+  pages   = {126},
+  year    = {2025},
+  publisher = {MDPI},
+  doi     = {10.3390/rs17010126}
+}
 ```
-code blocks for commands
-```
-
-## Help
-
-Any advise for common problems or issues.
-```
-command to run if program contains helper info
-```
-
-## Authors
-
-[@Zhongying Wang](Zhongying.Wang@colorado.edu)
-
-## Version History
-
-* 2.0
-    * Various bug fixes and optimizations
-    * See [commit change]() or See [release history]()
-* 1.0
-    * Initial Release
+---
 
 ## License
 
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
-
-## Acknowledgments
-
-Inspiration, code snippets, etc.
+Distributed under the **Apache License 2.0**.  
