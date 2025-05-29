@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1234567.svg)](https://doi.org/10.5281/zenodo.1234567)
 ![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
-![Python](https://img.shields.io/badge/python-3.10+-blue)
+![Python](https://img.shields.io/badge/python-3.8-blue)
 
 > **High-resolution daily PM₂․₅ maps (1 km) for the contiguous United States (2005-08-25 ➜ 2021-12-31),  
 > generated with a Bi-LSTM-Attention model described in _Wang et al., Remote Sensing 17(1):126, 2025_.**
@@ -49,7 +49,14 @@ python scripts/infer.py --date 2020-07-05 --input data/sample \
 python notebooks/plot_example.py outputs/pm25_2020-07-05.nc
 ```
 
-## Install & environment &nbsp;<img src="https://img.shields.io/badge/status-under%20construction-orange" alt="under construction" height="20">
+## Install & environment
+### Prerequisites
+* **Conda ≥ 4.12** (or the drop-in replacement **Mamba** for faster solves).  
+  <small>Miniconda download: <https://docs.conda.io/en/latest/miniconda.html></small>
+* **Python 3.8** (pinned inside the env file).
+* **Git** to clone this repository.
+* **GPU (optional)**  
+  *Inference works on CPU; training the full 17-year model requires an NVIDIA card with ≥ 10 GB VRAM and CUDA 11.4.*
 
 ---
 
