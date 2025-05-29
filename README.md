@@ -8,7 +8,7 @@
 > generated with a Bi-LSTM-Attention model described in _Wang et al., Remote Sensing 17(1):126, 2025_.**
 
 <p align="center">
-  <img src="docs/_static/example_conus_2020-07-05.png" alt="Example map" width="85%">
+  <img src="docs/_static/pred_map_wildfire_revised2.png" alt="Example map" width="85%">
 </p>
 
 ---
