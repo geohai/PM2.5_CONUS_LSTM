@@ -1,6 +1,6 @@
 # Daily 1-KM resolution PM2.5 for Contiguous US from 2005 to 2021
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1234567.svg)](https://doi.org/10.5281/zenodo.1234567)
+[![DOI](https://img.shields.io/badge/DOI-10.3390%2Frs17010126-blue.svg)](https://doi.org/10.3390/rs17010126)
 ![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8-blue)
 
