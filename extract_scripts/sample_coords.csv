@@ -1,0 +1,12 @@
+site_id,city,latitude,longitude
+1,New York,40.7128,-74.0060
+2,Los Angeles,34.0522,-118.2437
+3,Chicago,41.8781,-87.6298
+4,Houston,29.7604,-95.3698
+5,Phoenix,33.4484,-112.0740
+6,Denver,39.7392,-104.9903
+7,Seattle,47.6062,-122.3321
+8,Atlanta,33.7490,-84.3880
+9,Boston,42.3601,-71.0589
+10,Miami,25.7617,-80.1918
+99,London (out of CONUS),51.5074,-0.1278
